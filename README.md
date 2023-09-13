@@ -14,3 +14,22 @@ Mouse only. Works on phones in landscape mode.
 Drag goblins right to attack and to sacrifice and to deny them.
 Drag goblins left to use thier wizard power, or to accept them into your army.
 
+# Credits
+Music:
+Alta Trinita Beata - Laudario di Cortona - 1200s
+Totus Floreo - Unknown - 1200s
+Goblin Battle - Curtastic - 2023
+The Bonnie Banks o' Loch Lomond - Unknown - 1700s
+Development:
+Game Design - Curtastic
+Code - Curtastic
+Artwork - Curtastic
+NEAR integration - Vertfromage
+Compression - RoadRoller
+Special Thanks:
+Slay the Spire
+Liath Wolf
+Mark Nicol
+Desertify Urbex
+The World from Above HD
+Fortress of Lugh
