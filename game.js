@@ -1,8 +1,5 @@
-//deflects cannonball if survive.
-//50% accuracy gob
-//1=yester, 2=Dunbar, 3=Dirleton, 4=Byres, 5=Edinburgh, 6=Abercorn, 7=Aberdour, 8=Macduff's, 9=St Andrews, 10=Leuchars, 11= 
-// above perth:  blair , Inverquiech, Kinclaven, Old Clunie
 var gLog=console.log.bind(console),
+	gNearLoading,
 	gNearBrowns,
 	gNearLoggedIn,
 	gpen,
@@ -571,6 +568,25 @@ O-- |R-- |O-- |T-- |Q-- |R-- |Q-- |M-- |O-- |R-- |O-- |T-- |O-- |R-- |R-- |O-- |
 		gLoops++
 		gStateLoops++
 
+		if(gNearLoading) {
+			gNearBut.style.opacity = Math.abs(gSin(gLoops/3))
+			if(gNearLoading == 1) {
+				if(window.nearApi) {
+					gNearLoading = 2
+					gNearSetup()
+				}
+			}
+			if(gNearLoading == 2) {
+				if(window.walletConnection) {
+					gNearLoading = 0
+					if(window.walletConnection.isSignedIn()) {
+						gNearLogInFun()
+					} else {
+						gNearLogIn()
+					}
+				}
+			}
+		}
 
 		var lo=1e4
 		gMouseOnGob = u
@@ -1531,7 +1547,12 @@ M-MQR-Q R-RQR-R-Q-R-R-Q `
 
 
 onload = _ => {
-	gNearBut.onclick = () => gNearLogIn()
+	gNearBut.onclick = () => {
+		var tag = document.createElement("script")
+		tag.src = "https://cdn.jsdelivr.net/npm/near-api-js/dist/near-api-js.min.js"
+		document.getElementsByTagName("head")[0].appendChild(tag)
+		gNearLoading = 1
+	}
 	gPen = gCanvas.getContext('2d')
 	
 	onresize = _ => {
@@ -1686,7 +1707,6 @@ onload = _ => {
 		return false
 	}, {passive:false})
 
-	gNearSetup()
 }
 
 
@@ -1930,6 +1950,25 @@ var gTowerGotHitSound = gSoundEffectMake([86,9,.05,86,9,.1,86,69,.2], (i,len) =>
 var gYouGotHitSound = gSoundEffectMake([58,29,.3], (i,len) => gRandom()*.3-(i%10000<5000?1:.57) )
 var gBurnSound = gSoundEffectMake([38,49,.3], (i,len) => -gRandom()*3)
 
+function gNearLogInFun() {
+	if(!gNearLoggedIn) {
+		gNearLoggedIn = 1
+		gNearBut.style.color = '#575'
+		gNearBut.style.textShadow= "0 0 5px #5C5"
+		gNearBrownsGet()
+		var gob = gGobMake(gGobKinds.lookout)
+		gGobArmy.push(gob)
+		gob.endX = gob.x = gYouX+55
+		gob.endY = gob.y = gYouY
+		alert(`Logged in to NEAR! Free ${gob.kind.name} goblin added!`)
+		gNearBut.onclick = () => {
+			walletConnection.signOut()
+			gNearLoggedIn = 0
+			gNearBut.style.color = '#000'
+			gNearBut.style.textShadow = "none"
+		}
+	}
+}
 
 async function gNearSetup() {
     try {
@@ -1943,21 +1982,7 @@ async function gNearSetup() {
         });
         window.walletConnection = new nearApi.WalletConnection(near, "hugo-the-wizard-near-arcade")
         if(window.walletConnection.isSignedIn()){
-            gNearLoggedIn = 1
-			gNearBut.style.color = '#575'
-			gNearBut.style.textShadow= "0 0 5px #5C5"
-            gNearBrownsGet()
-			var gob = gGobMake(gGobKinds.lookout)
-			gGobArmy.push(gob)
-			gob.endX = gob.x = gYouX+55
-			gob.endY = gob.y = gYouY
-			alert(`Logged in to NEAR! Free ${gob.kind.name} goblin added!`)
-			gNearBut.onclick = () => {
-				walletConnection.signOut()
-	            gNearLoggedIn = 0
-				gNearBut.style.color = '#000'
-				gNearBut.style.textShadow = "none"
-			}
+			gNearLogInFun()
         }
     } catch(e) {
         gLog(e)
